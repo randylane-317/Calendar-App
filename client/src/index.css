@@ -1,0 +1,127 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── react-big-calendar overrides ── */
+.rbc-calendar {
+  font-family: inherit;
+}
+
+.rbc-toolbar {
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.rbc-toolbar button {
+  color: #374151;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  background: white;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.rbc-toolbar button:hover {
+  background: #f9fafb;
+}
+
+.rbc-toolbar button.rbc-active {
+  background: #6366f1;
+  color: white;
+  border-color: #6366f1;
+}
+
+.rbc-toolbar-label {
+  font-weight: 600;
+  font-size: 15px;
+  color: #111827;
+}
+
+.rbc-header {
+  padding: 10px 4px;
+  font-weight: 600;
+  font-size: 12px;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.rbc-month-view {
+  border: 1px solid #f3f4f6;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.rbc-day-bg + .rbc-day-bg {
+  border-left: 1px solid #f3f4f6;
+}
+
+.rbc-month-row + .rbc-month-row {
+  border-top: 1px solid #f3f4f6;
+}
+
+.rbc-today {
+  background-color: #eef2ff;
+}
+
+.rbc-off-range-bg {
+  background: #fafafa;
+}
+
+.rbc-event {
+  border-radius: 6px;
+  padding: 2px 6px;
+  font-size: 12px;
+  font-weight: 500;
+  border: none !important;
+}
+
+.rbc-event:focus {
+  outline: 2px solid #6366f1;
+  outline-offset: 2px;
+}
+
+.rbc-show-more {
+  font-size: 11px;
+  color: #6366f1;
+  font-weight: 500;
+}
+
+.rbc-time-view {
+  border: 1px solid #f3f4f6;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.rbc-time-header-content {
+  border-left: 1px solid #f3f4f6;
+}
+
+.rbc-timeslot-group {
+  border-bottom: 1px solid #f9fafb;
+}
+
+.rbc-current-time-indicator {
+  background-color: #6366f1;
+}
+
+@media (max-width: 640px) {
+  .rbc-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .rbc-toolbar .rbc-btn-group {
+    display: flex;
+    justify-content: center;
+  }
+
+  .rbc-toolbar-label {
+    text-align: center;
+  }
+}

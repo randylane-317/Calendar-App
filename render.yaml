@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: couples-calendar
+    env: node
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        generateValue: true
+      - key: PORT
+        value: 3001
+      - key: DB_PATH
+        value: /var/data/calendar.db
+      - key: GMAIL_USER
+        sync: false
+      - key: GMAIL_APP_PASSWORD
+        sync: false
+      - key: VAPID_PUBLIC_KEY
+        sync: false
+      - key: VAPID_PRIVATE_KEY
+        sync: false
+    disk:
+      name: calendar-data
+      mountPath: /var/data
+      sizeGB: 1
