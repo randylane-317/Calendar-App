@@ -63,7 +63,6 @@ export default function EventModal({ event, defaultDate, users, currentUser, eve
     setTimeout(() => titleRef.current?.focus(), 50);
   }, [event]);
 
-  // Trap focus and close on Escape
   useEffect(() => {
     const onKey = (e) => { if (e.key === 'Escape') onClose(); };
     window.addEventListener('keydown', onKey);
@@ -71,8 +70,8 @@ export default function EventModal({ event, defaultDate, users, currentUser, eve
   }, [onClose]);
 
   const ownerColor = form.owner_id
-    ? (users.find(u => u.id === form.owner_id)?.color || '#6366F1')
-    : '#8B5CF6';
+    ? (users.find(u => u.id === form.owner_id)?.color || '#B87042')
+    : '#9A8C82';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -95,21 +94,30 @@ export default function EventModal({ event, defaultDate, users, currentUser, eve
   const updateReminder = (i, key, val) =>
     setForm(f => ({ ...f, reminders: f.reminders.map((r, idx) => idx === i ? { ...r, [key]: val } : r) }));
 
+  const conflicts = findConflicts(form, events, event?.id);
+
   return (
     <div
-      className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-0 sm:p-4"
+      className="fixed inset-0 bg-espresso/30 backdrop-blur-[2px] flex items-end sm:items-center justify-center z-50 p-0 sm:p-6"
       onClick={e => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <div className="bg-white w-full sm:max-w-lg rounded-t-2xl sm:rounded-2xl shadow-xl max-h-[92dvh] flex flex-col">
+      <div className="bg-paper w-full sm:max-w-lg rounded-t-none sm:rounded-none shadow-2xl max-h-[92dvh] flex flex-col border-t-4 sm:border-t-0 sm:border-l-4"
+        style={{ borderColor: ownerColor }}
+      >
+
+        {/* Drag handle on mobile */}
+        <div className="flex justify-center pt-3 pb-1 sm:hidden">
+          <div className="w-8 h-1 rounded-full bg-warm-200" />
+        </div>
 
         {/* Header */}
-        <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-gray-100 flex-shrink-0">
-          <h2 className="font-semibold text-gray-900 text-base">
+        <div className="flex items-center justify-between px-7 pt-5 pb-4 border-b border-warm-200 flex-shrink-0">
+          <h2 className="font-serif text-lg text-espresso">
             {event ? 'Edit Event' : 'New Event'}
           </h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 w-7 h-7 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors text-xl leading-none"
+            className="text-warm-300 hover:text-espresso transition-colors text-2xl leading-none w-7 h-7 flex items-center justify-center"
             aria-label="Close"
           >
             ×
@@ -117,7 +125,7 @@ export default function EventModal({ event, defaultDate, users, currentUser, eve
         </div>
 
         {/* Scrollable body */}
-        <form onSubmit={handleSubmit} className="overflow-y-auto flex-1 px-6 py-5 space-y-5">
+        <form onSubmit={handleSubmit} className="overflow-y-auto flex-1 px-7 py-6 space-y-6">
 
           {/* Title */}
           <input
@@ -125,74 +133,74 @@ export default function EventModal({ event, defaultDate, users, currentUser, eve
             type="text"
             value={form.title}
             onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
-            className="w-full text-lg font-medium border-0 border-b-2 border-gray-200 focus:border-indigo-500 focus:outline-none py-1 placeholder-gray-300 bg-transparent"
+            className="w-full text-xl font-serif bg-transparent border-0 border-b border-warm-200 pb-3 text-espresso focus:outline-none focus:border-copper transition-colors placeholder-warm-200"
             placeholder="Event title"
             required
           />
 
           {/* Date & Times */}
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-3 gap-4">
             <div className="col-span-3 sm:col-span-1">
-              <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1.5">Date</label>
+              <label className="field-label">Date</label>
               <input
                 type="date"
                 value={form.date}
                 onChange={e => setForm(f => ({ ...f, date: e.target.value }))}
-                className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="field-input"
                 required
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1.5">Start</label>
+              <label className="field-label">Start</label>
               <input
                 type="time"
                 value={form.start_time}
                 onChange={e => setForm(f => ({ ...f, start_time: e.target.value }))}
-                className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="field-input"
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1.5">End</label>
+              <label className="field-label">End</label>
               <input
                 type="time"
                 value={form.end_time}
                 onChange={e => setForm(f => ({ ...f, end_time: e.target.value }))}
-                className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="field-input"
               />
             </div>
           </div>
 
           {/* Owner */}
           <div>
-            <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">Whose event?</label>
-            <div className="flex flex-wrap gap-2">
+            <label className="field-label">For</label>
+            <div className="flex flex-wrap gap-2 mt-1">
               {users.map(u => (
                 <button
                   key={u.id}
                   type="button"
                   onClick={() => setForm(f => ({ ...f, owner_id: u.id }))}
-                  className="flex items-center gap-2 px-3.5 py-2 rounded-xl border-2 text-sm font-medium transition-all"
+                  className="flex items-center gap-2 px-4 py-2 text-xs font-medium tracking-wide border transition-all"
                   style={
                     form.owner_id === u.id
-                      ? { backgroundColor: u.color, borderColor: u.color, color: 'white' }
-                      : { borderColor: '#e5e7eb', color: '#374151' }
+                      ? { backgroundColor: u.color, borderColor: u.color, color: '#FDFAF5' }
+                      : { borderColor: '#E6DDD4', color: '#7A6E65' }
                   }
                 >
-                  <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: u.color }} />
+                  <div className="w-2 h-2 rounded-full" style={{ backgroundColor: form.owner_id === u.id ? '#FDFAF5' : u.color }} />
                   {u.name}
                 </button>
               ))}
               <button
                 type="button"
                 onClick={() => setForm(f => ({ ...f, owner_id: null }))}
-                className="flex items-center gap-2 px-3.5 py-2 rounded-xl border-2 text-sm font-medium transition-all"
+                className="flex items-center gap-2 px-4 py-2 text-xs font-medium tracking-wide border transition-all"
                 style={
                   form.owner_id === null
-                    ? { backgroundColor: '#8B5CF6', borderColor: '#8B5CF6', color: 'white' }
-                    : { borderColor: '#e5e7eb', color: '#374151' }
+                    ? { backgroundColor: '#9A8C82', borderColor: '#9A8C82', color: '#FDFAF5' }
+                    : { borderColor: '#E6DDD4', color: '#7A6E65' }
                 }
               >
-                <div className="w-2.5 h-2.5 rounded-full bg-purple-500" />
+                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: form.owner_id === null ? '#FDFAF5' : '#9A8C82' }} />
                 Shared
               </button>
             </div>
@@ -200,42 +208,40 @@ export default function EventModal({ event, defaultDate, users, currentUser, eve
 
           {/* Notes */}
           <div>
-            <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1.5">Notes</label>
+            <label className="field-label">Notes</label>
             <textarea
               value={form.notes}
               onChange={e => setForm(f => ({ ...f, notes: e.target.value }))}
-              className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
+              className="field-input resize-none"
               rows={3}
-              placeholder="Add any notes…"
+              placeholder="Add notes…"
             />
           </div>
 
           {/* Reminders */}
           <div>
-            <div className="flex items-center justify-between mb-2">
-              <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wide">
-                Reminders
-              </label>
+            <div className="flex items-center justify-between mb-3">
+              <label className="field-label mb-0">Reminders</label>
               <button
                 type="button"
                 onClick={addReminder}
-                className="text-xs text-indigo-600 font-semibold hover:text-indigo-800"
+                className="text-xs text-copper hover:text-copper-600 transition-colors tracking-wide"
               >
                 + Add reminder
               </button>
             </div>
 
             {form.reminders.length === 0 && (
-              <p className="text-sm text-gray-400">No reminders set.</p>
+              <p className="text-xs text-warm-300 tracking-wide">No reminders set.</p>
             )}
 
             <div className="space-y-2">
               {form.reminders.map((r, i) => (
-                <div key={i} className="flex items-center gap-2 bg-gray-50 rounded-xl p-2.5">
+                <div key={i} className="flex items-center gap-2 bg-warm-50 px-3 py-2.5">
                   <select
                     value={r.minutes_before}
                     onChange={e => updateReminder(i, 'minutes_before', Number(e.target.value))}
-                    className="flex-1 text-sm border border-gray-200 rounded-lg px-2.5 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="flex-1 text-xs border-0 border-b border-warm-200 bg-transparent text-espresso focus:outline-none focus:border-copper py-1"
                   >
                     {REMINDER_OPTIONS.map(o => (
                       <option key={o.minutes} value={o.minutes}>{o.label}</option>
@@ -244,7 +250,7 @@ export default function EventModal({ event, defaultDate, users, currentUser, eve
                   <select
                     value={r.method}
                     onChange={e => updateReminder(i, 'method', e.target.value)}
-                    className="text-sm border border-gray-200 rounded-lg px-2.5 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="text-xs border-0 border-b border-warm-200 bg-transparent text-espresso focus:outline-none focus:border-copper py-1"
                   >
                     <option value="email">Email</option>
                     <option value="push">Push</option>
@@ -252,8 +258,7 @@ export default function EventModal({ event, defaultDate, users, currentUser, eve
                   <button
                     type="button"
                     onClick={() => removeReminder(i)}
-                    className="text-gray-300 hover:text-red-400 text-xl leading-none transition-colors px-1"
-                    aria-label="Remove reminder"
+                    className="text-warm-200 hover:text-red-400 transition-colors text-lg leading-none"
                   >
                     ×
                   </button>
@@ -262,89 +267,61 @@ export default function EventModal({ event, defaultDate, users, currentUser, eve
             </div>
           </div>
 
-          {(() => {
-            const conflicts = findConflicts(form, events, event?.id);
-            if (conflicts.length === 0) return null;
-            return (
-              <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
-                <div className="flex items-start gap-2">
-                  <span className="text-amber-500 text-base leading-none mt-0.5">⚠️</span>
-                  <div>
-                    <p className="text-sm font-semibold text-amber-800">Time conflict</p>
-                    <ul className="mt-1 space-y-0.5">
-                      {conflicts.map(c => {
-                        const owner = users.find(u => u.id === c.owner_id);
-                        return (
-                          <li key={c.id} className="text-sm text-amber-700 flex items-center gap-1.5">
-                            <span
-                              className="inline-block w-2 h-2 rounded-full flex-shrink-0"
-                              style={{ backgroundColor: owner?.color || '#8B5CF6' }}
-                            />
-                            <span>
-                              <strong>{c.title}</strong>
-                              {c.start_time && ` · ${c.start_time}${c.end_time ? `–${c.end_time}` : ''}`}
-                            </span>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                    <p className="text-xs text-amber-600 mt-1.5">You can still save — this is just a heads-up.</p>
-                  </div>
-                </div>
-              </div>
-            );
-          })()}
+          {/* Conflict warning */}
+          {conflicts.length > 0 && (
+            <div className="border border-amber-200 bg-amber-50 px-4 py-3">
+              <p className="text-xs font-medium text-amber-800 tracking-wide mb-1.5">Time conflict</p>
+              <ul className="space-y-1">
+                {conflicts.map(c => {
+                  const owner = users.find(u => u.id === c.owner_id);
+                  return (
+                    <li key={c.id} className="flex items-center gap-2 text-xs text-amber-700">
+                      <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: owner?.color || '#9A8C82' }} />
+                      <span>
+                        <strong>{c.title}</strong>
+                        {c.start_time && ` · ${c.start_time}${c.end_time ? `–${c.end_time}` : ''}`}
+                      </span>
+                    </li>
+                  );
+                })}
+              </ul>
+              <p className="text-xs text-amber-600 mt-2">You can still save — this is just a heads-up.</p>
+            </div>
+          )}
 
           {error && (
-            <p className="text-sm text-red-600 bg-red-50 rounded-xl px-4 py-2.5">{error}</p>
+            <p className="text-xs text-red-700 bg-red-50 border border-red-200 px-4 py-3 tracking-wide">{error}</p>
           )}
         </form>
 
         {/* Footer */}
-        <div className="flex items-center gap-3 px-6 py-4 border-t border-gray-100 flex-shrink-0">
+        <div className="flex items-center gap-4 px-7 py-4 border-t border-warm-200 flex-shrink-0">
           {event && !confirmDelete && (
             <button
               type="button"
               onClick={() => setConfirmDelete(true)}
-              className="text-sm text-red-400 hover:text-red-600 transition-colors"
+              className="text-xs text-warm-300 hover:text-red-500 transition-colors tracking-wide"
             >
               Delete
             </button>
           )}
           {confirmDelete && (
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-500">Delete this event?</span>
-              <button
-                type="button"
-                onClick={() => onDelete(event.id)}
-                className="text-sm text-red-600 font-semibold"
-              >
-                Yes
-              </button>
-              <button
-                type="button"
-                onClick={() => setConfirmDelete(false)}
-                className="text-sm text-gray-400"
-              >
-                No
-              </button>
+            <div className="flex items-center gap-3">
+              <span className="text-xs text-warm-400">Delete this?</span>
+              <button type="button" onClick={() => onDelete(event.id)} className="text-xs text-red-600 font-medium tracking-wide">Yes</button>
+              <button type="button" onClick={() => setConfirmDelete(false)} className="text-xs text-warm-400">No</button>
             </div>
           )}
 
-          <div className="ml-auto flex items-center gap-2">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 text-sm text-gray-600 hover:text-gray-900 rounded-xl hover:bg-gray-100 transition-colors"
-            >
+          <div className="ml-auto flex items-center gap-3">
+            <button type="button" onClick={onClose} className="btn-outline text-xs">
               Cancel
             </button>
             <button
               type="submit"
-              form="event-form"
               disabled={loading}
               onClick={handleSubmit}
-              className="px-5 py-2 text-sm font-semibold text-white rounded-xl transition-all disabled:opacity-50 active:brightness-90"
+              className="px-6 py-2.5 text-xs font-medium tracking-wide text-paper transition-colors disabled:opacity-40"
               style={{ backgroundColor: ownerColor }}
             >
               {loading ? 'Saving…' : event ? 'Save changes' : 'Add event'}

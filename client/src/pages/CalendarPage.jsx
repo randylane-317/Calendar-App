@@ -8,6 +8,7 @@ import { usePushNotifications } from '../hooks/usePushNotifications';
 import Header from '../components/Header';
 import EventModal from '../components/EventModal';
 import UpcomingEvents from '../components/UpcomingEvents';
+import CalendarToolbar from '../components/CalendarToolbar';
 
 const localizer = dateFnsLocalizer({
   format,
@@ -62,11 +63,12 @@ export default function CalendarPage() {
     const color = getUserColor(calEvent.resource.owner_id);
     return {
       style: {
-        backgroundColor: color,
-        borderColor: color,
-        color: 'white',
-        borderRadius: '6px',
-        border: 'none',
+        backgroundColor: `${color}1A`,
+        borderLeft: `3px solid ${color}`,
+        color: '#1C1612',
+        borderRadius: '0',
+        boxShadow: 'none',
+        padding: '1px 6px',
       },
     };
   };
@@ -97,13 +99,13 @@ export default function CalendarPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-paper flex flex-col">
       <Header view={view} onViewChange={setView} />
 
       <div className="flex-1 flex flex-col lg:flex-row gap-4 p-4 max-w-7xl mx-auto w-full">
 
         {/* Calendar */}
-        <div className="flex-1 bg-white rounded-2xl shadow-sm border border-gray-100 p-4 overflow-hidden">
+        <div className="flex-1 bg-white border border-warm-200 p-5 overflow-hidden shadow-none">
           <Calendar
             localizer={localizer}
             events={calendarEvents}
@@ -117,6 +119,7 @@ export default function CalendarPage() {
             eventPropGetter={eventStyleGetter}
             style={{ height: 'max(500px, calc(100vh - 160px))' }}
             popup
+            components={{ toolbar: CalendarToolbar }}
           />
         </div>
 

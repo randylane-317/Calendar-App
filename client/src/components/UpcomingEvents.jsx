@@ -1,11 +1,11 @@
 import React from 'react';
-import { format, parseISO, startOfDay, addDays, isAfter, isBefore, isToday, isTomorrow } from 'date-fns';
+import { format, parseISO, startOfDay, addDays, isBefore, isToday, isTomorrow } from 'date-fns';
 
 function dayLabel(dateStr) {
   const d = parseISO(dateStr);
   if (isToday(d))    return 'Today';
   if (isTomorrow(d)) return 'Tomorrow';
-  return format(d, 'EEE, MMM d');
+  return format(d, 'EEEE, MMM d');
 }
 
 export default function UpcomingEvents({ events, users, onEventClick, onAddEvent }) {
@@ -14,8 +14,8 @@ export default function UpcomingEvents({ events, users, onEventClick, onAddEvent
   const end   = addDays(start, 8);
 
   const getUserColor = (ownerId) => {
-    if (!ownerId) return '#8B5CF6';
-    return users.find(u => u.id === ownerId)?.color || '#6366F1';
+    if (!ownerId) return '#9A8C82';
+    return users.find(u => u.id === ownerId)?.color || '#B87042';
   };
 
   const upcoming = [...events]
@@ -28,7 +28,6 @@ export default function UpcomingEvents({ events, users, onEventClick, onAddEvent
       return dc !== 0 ? dc : (a.start_time || '').localeCompare(b.start_time || '');
     });
 
-  // Group by date
   const byDate = upcoming.reduce((acc, e) => {
     if (!acc[e.date]) acc[e.date] = [];
     acc[e.date].push(e);
@@ -36,37 +35,40 @@ export default function UpcomingEvents({ events, users, onEventClick, onAddEvent
   }, {});
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="font-semibold text-gray-900 text-sm">Next 7 Days</h2>
+    <div className="bg-white border border-warm-200 p-5">
+
+      {/* Header */}
+      <div className="flex items-center justify-between mb-5">
+        <h2 className="font-serif text-base text-espresso">Coming Up</h2>
         <button
           onClick={onAddEvent}
-          className="w-7 h-7 bg-indigo-600 text-white rounded-full flex items-center justify-center hover:bg-indigo-700 transition-colors text-base leading-none"
-          aria-label="Add event"
+          className="text-xs text-warm-400 hover:text-espresso border border-warm-200 hover:border-espresso px-3 py-1.5 transition-colors tracking-wide"
         >
-          +
+          + Add
         </button>
       </div>
 
       {upcoming.length === 0 ? (
-        <div className="text-center py-10">
-          <p className="text-3xl mb-2">🗓️</p>
-          <p className="text-sm text-gray-400">Nothing coming up</p>
+        <div className="py-10 text-center">
+          <p className="font-serif text-2xl text-warm-200 mb-3">—</p>
+          <p className="text-xs text-warm-400 tracking-wide">Nothing in the next 7 days</p>
           <button
             onClick={onAddEvent}
-            className="mt-3 text-sm text-indigo-600 font-semibold hover:underline"
+            className="mt-4 text-xs text-copper underline underline-offset-4 hover:text-copper-600 transition-colors tracking-wide"
           >
-            Add an event
+            Add something
           </button>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-5">
           {Object.entries(byDate).map(([date, evts]) => (
             <div key={date}>
-              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1.5">
+              {/* Date heading */}
+              <p className="font-serif text-xs text-warm-400 mb-2 italic">
                 {dayLabel(date)}
               </p>
-              <div className="space-y-1">
+
+              <div className="space-y-px">
                 {evts.map(event => {
                   const color = getUserColor(event.owner_id);
                   const ownerLabel = event.owner_id
@@ -77,20 +79,21 @@ export default function UpcomingEvents({ events, users, onEventClick, onAddEvent
                     <button
                       key={event.id}
                       onClick={() => onEventClick(event)}
-                      className="w-full text-left flex items-start gap-2.5 px-3 py-2.5 rounded-xl hover:bg-gray-50 transition-colors group"
+                      className="w-full text-left flex items-stretch gap-3 py-2.5 px-2 hover:bg-warm-50 transition-colors group"
                     >
-                      <div
-                        className="w-1 rounded-full flex-shrink-0 mt-0.5 self-stretch min-h-[1.5rem]"
-                        style={{ backgroundColor: color }}
-                      />
+                      {/* Color accent */}
+                      <div className="w-0.5 flex-shrink-0 self-stretch rounded-full" style={{ backgroundColor: color }} />
+
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-800 truncate group-hover:text-indigo-600 transition-colors">
+                        <p className="text-sm text-espresso truncate group-hover:text-copper transition-colors">
                           {event.title}
                         </p>
-                        <p className="text-xs text-gray-400 mt-0.5">
-                          {event.start_time || 'All day'}
-                          {event.end_time && ` – ${event.end_time}`}
-                          <span className="ml-1.5 font-medium" style={{ color }}>· {ownerLabel}</span>
+                        <p className="text-xs text-warm-400 mt-0.5">
+                          {event.start_time
+                            ? `${event.start_time}${event.end_time ? ` – ${event.end_time}` : ''}`
+                            : 'All day'}
+                          <span className="mx-1.5 text-warm-200">·</span>
+                          <span style={{ color }}>{ownerLabel}</span>
                         </p>
                       </div>
                     </button>
