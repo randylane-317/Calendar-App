@@ -95,7 +95,7 @@ export default function LoginPage() {
           </p>
         ) : (
           <p className="text-xs text-warm-300 tracking-wide text-center">
-            — for Randy &amp; his wife —
+            — Dedicated to Tayden —
           </p>
         )}
       </div>
