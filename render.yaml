@@ -11,7 +11,7 @@ services:
       - key: JWT_SECRET
         generateValue: true
       - key: DB_PATH
-        value: /var/data/calendar.db
+        value: ./data/calendar.db
       - key: GMAIL_USER
         sync: false
       - key: GMAIL_APP_PASSWORD
@@ -20,7 +20,3 @@ services:
         sync: false
       - key: VAPID_PRIVATE_KEY
         sync: false
-    disk:
-      name: calendar-data
-      mountPath: /var/data
-      sizeGB: 1
