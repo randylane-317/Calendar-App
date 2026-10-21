@@ -26,6 +26,13 @@ export const api = {
     update: (id, data) => request('PUT',    `/events/${id}`, data),
     delete: (id)       => request('DELETE', `/events/${id}`),
   },
+  groceries: {
+    list:           ()         => request('GET',    '/groceries'),
+    create:         (data)     => request('POST',   '/groceries', data),
+    update:         (id, data) => request('PUT',    `/groceries/${id}`, data),
+    delete:         (id)       => request('DELETE', `/groceries/${id}`),
+    clearCompleted: ()         => request('DELETE', '/groceries/completed'),
+  },
   push: {
     vapidKey:    ()      => request('GET',    '/push/vapid-public-key'),
     subscribe:   (sub)   => request('POST',   '/push/subscribe', sub),

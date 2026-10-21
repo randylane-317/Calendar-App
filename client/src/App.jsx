@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import CalendarPage from './pages/CalendarPage';
+import GroceryPage from './pages/GroceryPage';
 
 function AppRoutes() {
   const { user, loading } = useAuth();
@@ -21,7 +22,8 @@ function AppRoutes() {
       <Route path="/login"    element={user ? <Navigate to="/" /> : <LoginPage />} />
       <Route path="/register" element={user ? <Navigate to="/" /> : <RegisterPage />} />
       <Route path="/"         element={user ? <CalendarPage />   : <Navigate to="/login" />} />
-      <Route path="*"         element={<Navigate to="/" />} />
+      <Route path="/groceries" element={user ? <GroceryPage />  : <Navigate to="/login" />} />
+      <Route path="*"        element={<Navigate to="/" />} />
     </Routes>
   );
 }

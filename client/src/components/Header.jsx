@@ -1,5 +1,11 @@
 import React, { useState } from 'react';
+import { NavLink } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+
+const navClass = ({ isActive }) =>
+  `px-3 py-1.5 text-xs font-medium tracking-wide transition-colors ${
+    isActive ? 'text-espresso border-b border-espresso' : 'text-warm-400 hover:text-espresso'
+  }`;
 
 export default function Header({ view, onViewChange }) {
   const { user, users, logout } = useAuth();
@@ -12,9 +18,14 @@ export default function Header({ view, onViewChange }) {
         {/* Brand */}
         <div className="flex items-center gap-3 min-w-0">
           <span className="font-serif text-xl text-espresso tracking-tight leading-none">Our Days</span>
-          <span className="hidden sm:block text-warm-300 text-xs">·</span>
+          {/* Page tabs */}
+          <nav className="flex items-center">
+            <NavLink to="/" end className={navClass}>Calendar</NavLink>
+            <NavLink to="/groceries" className={navClass}>Groceries</NavLink>
+          </nav>
+          <span className="hidden md:block text-warm-300 text-xs">·</span>
           {/* Color legend */}
-          <div className="hidden sm:flex items-center gap-3">
+          <div className="hidden md:flex items-center gap-3">
             {users.map(u => (
               <div key={u.id} className="flex items-center gap-1.5">
                 <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: u.color }} />
@@ -31,29 +42,31 @@ export default function Header({ view, onViewChange }) {
         {/* Controls */}
         <div className="flex items-center gap-2">
 
-          {/* View toggle */}
-          <div className="flex border border-warm-200 overflow-hidden text-xs">
-            <button
-              onClick={() => onViewChange('month')}
-              className={`px-4 py-2 font-medium tracking-wide transition-colors ${
-                view === 'month'
-                  ? 'bg-espresso text-paper'
-                  : 'text-warm-500 hover:text-espresso hover:bg-warm-50'
-              }`}
-            >
-              Month
-            </button>
-            <button
-              onClick={() => onViewChange('week')}
-              className={`px-4 py-2 font-medium tracking-wide border-l border-warm-200 transition-colors ${
-                view === 'week'
-                  ? 'bg-espresso text-paper'
-                  : 'text-warm-500 hover:text-espresso hover:bg-warm-50'
-              }`}
-            >
-              Week
-            </button>
-          </div>
+          {/* View toggle (calendar page only) */}
+          {onViewChange && (
+            <div className="flex border border-warm-200 overflow-hidden text-xs">
+              <button
+                onClick={() => onViewChange('month')}
+                className={`px-4 py-2 font-medium tracking-wide transition-colors ${
+                  view === 'month'
+                    ? 'bg-espresso text-paper'
+                    : 'text-warm-500 hover:text-espresso hover:bg-warm-50'
+                }`}
+              >
+                Month
+              </button>
+              <button
+                onClick={() => onViewChange('week')}
+                className={`px-4 py-2 font-medium tracking-wide border-l border-warm-200 transition-colors ${
+                  view === 'week'
+                    ? 'bg-espresso text-paper'
+                    : 'text-warm-500 hover:text-espresso hover:bg-warm-50'
+                }`}
+              >
+                Week
+              </button>
+            </div>
+          )}
 
           {/* Avatar + menu */}
           <div className="relative">

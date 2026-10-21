@@ -31,7 +31,8 @@ The frontend dev server proxies `/api/*` to `localhost:3001`, so no CORS config 
 │   ├── routes/
 │   │   ├── auth.js       # /api/auth — register, login, logout, /me, /users, /setup-status
 │   │   ├── events.js     # /api/events — CRUD + reminder fan-out
-│   │   └── push.js       # /api/push — VAPID key, subscribe, unsubscribe
+│   │   ├── push.js       # /api/push — VAPID key, subscribe, unsubscribe
+│   │   └── groceries.js  # /api/groceries — shared list CRUD + DELETE /completed
 │   └── services/
 │       ├── email.js      # Nodemailer/Gmail reminder emails
 │       ├── push.js       # web-push VAPID notification sender
@@ -47,7 +48,8 @@ The frontend dev server proxies `/api/*` to `localhost:3001`, so no CORS config 
         ├── pages/
         │   ├── LoginPage.jsx
         │   ├── RegisterPage.jsx  # Capped at 2 accounts; shows closed state after
-        │   └── CalendarPage.jsx  # Main view — calendar + sidebar, owns event fetch
+        │   ├── CalendarPage.jsx  # Main view — calendar + sidebar, owns event fetch
+        │   └── GroceryPage.jsx   # /groceries — shared grocery list, owns its own fetch
         └── components/
             ├── Header.jsx         # Color legend, month/week toggle, user avatar menu
             ├── EventModal.jsx     # Add/edit sheet — also runs conflict detection
@@ -64,6 +66,7 @@ Uses `node:sqlite` (`DatabaseSync`) — Node.js v22.5+ built-in, no native compi
 - `events` — id, title, date (TEXT `YYYY-MM-DD`), start_time / end_time (TEXT `HH:MM`), notes, owner_id (NULL = shared event), created_by
 - `reminders` — one row per (event, user, reminder config). When an event is saved with reminders, `insertRemindersForAllUsers` fans out one row per user per reminder setting so both users always get notified.
 - `push_subscriptions` — endpoint, p256dh, auth per user device
+- `grocery_items` — id, name, quantity (free text), completed (0/1), created_by. One list shared by both users.
 
 `lastInsertRowid` from `node:sqlite` returns a BigInt. Always wrap with `Number()` before passing to further queries.
 

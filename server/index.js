@@ -14,6 +14,7 @@ app.use(cookieParser());
 app.use('/api/auth',   require('./routes/auth'));
 app.use('/api/events', require('./routes/events'));
 app.use('/api/push',   require('./routes/push'));
+app.use('/api/groceries', require('./routes/groceries'));
 
 if (process.env.NODE_ENV === 'production') {
   const distPath = path.join(__dirname, '..', 'client', 'dist');
